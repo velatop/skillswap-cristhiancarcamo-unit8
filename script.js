@@ -34,7 +34,13 @@ function renderSkills(skillsToDisplay) {
 }
 
 function calculateTotalCost(hourlyRate, hours) {
-  return hourlyRate * hours;
+    return hourlyRate * hours;
+}
+
+function matchSkillsToUser(userNeeds, skills) {
+  return skills.filter(skill => 
+    skill.category === userNeeds.category && skill.price <= userNeeds.maxPrice
+  );
 }
 
 document.getElementById('calculate-btn').addEventListener('click', function () {
@@ -50,8 +56,6 @@ document.getElementById('calculate-btn').addEventListener('click', function () {
     const totalCost = calculateTotalCost(rate, hours);
     result.textContent = `Total Cost: $${totalCost.toFixed(2)}`;
 });
-
-
 
 document.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', () => {
@@ -76,6 +80,37 @@ document.getElementById('filter-music').addEventListener('click', function () {
 document.getElementById('filter-career').addEventListener('click', function () {
     const filtered = filterSkillsByCategory(skills, 'Career');
     renderSkills(filtered);
+});
+
+document.getElementById('match-btn').addEventListener('click', function () {
+    const category = document.getElementById('category-preference').value;
+    const maxPrice = parseFloat(document.getElementById('max-price').value);
+    const resultsContainer = document.getElementById('match-results');
+
+    if (!category || isNaN(maxPrice)) {
+        resultsContainer.innerHTML = '<p>Please select a category and enter a valid price</p>';
+        return;
+    }
+
+    const userNeeds = { category: category, maxPrice: maxPrice };
+    const matches = matchSkillsToUser(userNeeds, skills);
+
+    if (matches.length === 0) {
+        resultsContainer.innerHTML = '<p>No matches found</p>';
+        return;
+    }
+
+    resultsContainer.innerHTML = '<h3>Your Matches:</h3>';
+    matches.forEach(skill => {
+        const matchCard = document.createElement('div');
+        matchCard.classList.add('match-card');
+        matchCard.innerHTML = `
+      <h4>${skill.title}</h4>
+      <p>${skill.category}</p>
+      <span class="price">$${skill.price}/hour</span>
+    `;
+        resultsContainer.appendChild(matchCard);
+    });
 });
 
 renderSkills(skills);
