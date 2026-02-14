@@ -21,3 +21,5 @@ describe('filterSkillsByCategory function', () => {
     expect(filterSkillsByCategory(skills, 'Cooking')).toEqual([]);
   });
 });
+
+const { filterSkillsByCategory } = require('../skillswap-functions');
